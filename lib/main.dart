@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MainApp());
@@ -54,7 +57,7 @@ class _HomeState extends State<Home> {
       body: ListView.builder(
         itemCount: _names.length,
         itemBuilder: (BuildContext context, int index) => CharacterTile(
-          _names[index],
+          name: _names[index],
         ),
       ),
     );
@@ -62,7 +65,10 @@ class _HomeState extends State<Home> {
 }
 
 class CharacterTile extends StatelessWidget {
-  const CharacterTile(this.name);
+  const CharacterTile({
+    required this.name,
+    super.key,
+  });
 
   final String name;
 
@@ -74,18 +80,45 @@ class CharacterTile extends StatelessWidget {
   }
 }
 
+const starWarsBaseUrl = 'https://www.swapi.tech/api/';
+
 class StarWarsService {
   Future<List<String>> fetchPeople() async {
-    await Future.delayed(
-      const Duration(seconds: 3),
-    );
+    final response = await http.get(Uri.parse('${starWarsBaseUrl}people'));
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      if (json is Map<String, dynamic>) {
+        return _parseCharacters(json).map((e) => e.name).toList();
+      }
+    }
 
-    return [
-      'Luke Skywalker',
-      'Darth Vader',
-      'Princess Leia',
-      'C-3PO',
-      'R2-D2',
-    ];
+    return [];
   }
+
+  List<BasicCharacterData> _parseCharacters(Map<String, dynamic> json) {
+    final results = json['results'];
+    if (results is List<dynamic>) {
+      return results
+          .map(
+            (json) => BasicCharacterData.fromJson(json as Map<String, dynamic>),
+          )
+          .toList();
+    } else {
+      return [];
+    }
+  }
+}
+
+class BasicCharacterData {
+  final String id;
+  final String name;
+
+  BasicCharacterData({
+    required this.id,
+    required this.name,
+  });
+
+  BasicCharacterData.fromJson(Map<String, dynamic> json)
+      : id = json['uid'],
+        name = json['name'];
 }

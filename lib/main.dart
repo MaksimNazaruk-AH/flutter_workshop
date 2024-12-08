@@ -21,10 +21,21 @@ class MainApp extends StatelessWidget {
   }
 }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({
     super.key,
   });
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  final _names = [
+    'Luke Skywalker',
+    'Darth Vader',
+    'Princess Leia',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +45,11 @@ class Home extends StatelessWidget {
         title: const Text('Star Wars'),
       ),
       body: ListView(
-        children: const [
-          CharacterTile('Luke Skywalker'),
-          CharacterTile('Darth Vader'),
-        ],
+        children: _names
+            .map(
+              (name) => CharacterTile(name),
+            )
+            .toList(),
       ),
     );
   }

@@ -31,12 +31,18 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final _names = [
-    'Luke Skywalker',
-    'Darth Vader',
-    'Princess Leia',
-    'C-3PO',
-  ];
+  final _service = StarWarsService();
+  List<String> _names = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _service.fetchPeople().then((names) {
+      setState(() {
+        _names = names;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,5 +71,21 @@ class CharacterTile extends StatelessWidget {
     return ListTile(
       title: Text(name),
     );
+  }
+}
+
+class StarWarsService {
+  Future<List<String>> fetchPeople() async {
+    await Future.delayed(
+      const Duration(seconds: 3),
+    );
+
+    return [
+      'Luke Skywalker',
+      'Darth Vader',
+      'Princess Leia',
+      'C-3PO',
+      'R2-D2',
+    ];
   }
 }

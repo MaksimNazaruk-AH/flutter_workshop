@@ -35,6 +35,7 @@ class _HomeState extends State<Home> {
     'Luke Skywalker',
     'Darth Vader',
     'Princess Leia',
+    'C-3PO',
   ];
 
   @override
@@ -44,12 +45,11 @@ class _HomeState extends State<Home> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: const Text('Star Wars'),
       ),
-      body: ListView(
-        children: _names
-            .map(
-              (name) => CharacterTile(name),
-            )
-            .toList(),
+      body: ListView.builder(
+        itemCount: _names.length,
+        itemBuilder: (BuildContext context, int index) => CharacterTile(
+          _names[index],
+        ),
       ),
     );
   }

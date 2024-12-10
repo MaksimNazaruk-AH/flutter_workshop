@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:workshop/data/models/basic_character_data.dart';
 import 'package:workshop/data/services/star_wars_service.dart';
+import 'package:workshop/presentation/detail/detail_page.dart';
 import 'package:workshop/presentation/home/character_tile.dart';
 
 class HomePage extends StatefulWidget {
@@ -13,14 +15,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _service = StarWarsService();
-  List<String> _names = [];
+  List<BasicCharacterData> _characters = [];
 
   @override
   void initState() {
     super.initState();
-    _service.fetchPeople().then((names) {
+    _service.fetchPeople().then((characters) {
       setState(() {
-        _names = names;
+        _characters = characters;
       });
     });
   }
@@ -33,9 +35,15 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Star Wars'),
       ),
       body: ListView.builder(
-        itemCount: _names.length,
+        itemCount: _characters.length,
         itemBuilder: (BuildContext context, int index) => CharacterTile(
-          name: _names[index],
+          name: _characters[index].name,
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) =>
+                  DetailPage(basicCharacterData: _characters[index]),
+            ),
+          ),
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:workshop/data/models/basic_character_data.dart';
+import 'package:workshop/data/models/character_details.dart';
 
 const starWarsBaseUrl = 'https://www.swapi.tech/api/';
 
@@ -28,5 +29,19 @@ class StarWarsService {
     } else {
       return [];
     }
+  }
+
+  Future<CharacterDetails?> fetchCharacterDetails(String id) async {
+    final response = await http.get(Uri.parse('${starWarsBaseUrl}people/$id'));
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+      if (json is Map<String, dynamic>) {
+        final properties = json['result']['properties'] as Map<String, dynamic>;
+        return CharacterDetails.fromJson(properties);
+      }
+    }
+
+    return null;
   }
 }

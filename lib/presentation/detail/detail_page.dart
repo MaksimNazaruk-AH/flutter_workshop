@@ -42,7 +42,10 @@ class _DetailPageState extends State<DetailPage> {
         title: Text(widget.basicCharacterData.name),
       ),
       body: _details != null
-          ? _DetailsBody(details: _details!)
+          ? _DetailsBody(
+              id: widget.basicCharacterData.id,
+              details: _details!,
+            )
           : const Center(
               child: CircularProgressIndicator(),
             ),
@@ -51,9 +54,11 @@ class _DetailPageState extends State<DetailPage> {
 }
 
 class _DetailsBody extends StatelessWidget {
+  final String id;
   final CharacterDetails details;
 
   const _DetailsBody({
+    required this.id,
     required this.details,
   });
 
@@ -62,6 +67,7 @@ class _DetailsBody extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Image.asset('assets/img/$id.jpg'),
         Text('Name: ${details.name}'),
         Text('Height: ${details.height}'),
         Text('Mass: ${details.mass}'),

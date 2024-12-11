@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:workshop/data/models/basic_character_data.dart';
 import 'package:workshop/data/services/star_wars_service.dart';
 import 'package:workshop/presentation/detail/detail_page.dart';
@@ -14,16 +15,21 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final _service = StarWarsService();
   List<BasicCharacterData> _characters = [];
 
   @override
   void initState() {
     super.initState();
-    _service.fetchPeople().then((characters) {
-      setState(() {
-        _characters = characters;
-      });
+    _loadCharacters();
+  }
+
+  Future<void> _loadCharacters() async {
+    final characters =
+        await Provider.of<StarWarsService>(context, listen: false)
+            .fetchPeople();
+
+    setState(() {
+      _characters = characters;
     });
   }
 
@@ -34,18 +40,22 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: const Text('Star Wars'),
       ),
-      body: ListView.builder(
-        itemCount: _characters.length,
-        itemBuilder: (BuildContext context, int index) => CharacterTile(
-          name: _characters[index].name,
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) =>
-                  DetailPage(basicCharacterData: _characters[index]),
+      body: _characters.isNotEmpty
+          ? ListView.builder(
+              itemCount: _characters.length,
+              itemBuilder: (BuildContext context, int index) => CharacterTile(
+                name: _characters[index].name,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        DetailPage(basicCharacterData: _characters[index]),
+                  ),
+                ),
+              ),
+            )
+          : const Center(
+              child: CircularProgressIndicator(),
             ),
-          ),
-        ),
-      ),
     );
   }
 }

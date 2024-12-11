@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:workshop/data/models/basic_character_data.dart';
 import 'package:workshop/data/models/character_details.dart';
 import 'package:workshop/data/services/star_wars_service.dart';
@@ -16,7 +17,6 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
-  final _service = StarWarsService();
   CharacterDetails? _details;
 
   @override
@@ -26,8 +26,8 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   Future<void> _fetchDetails() async {
-    final details =
-        await _service.fetchCharacterDetails(widget.basicCharacterData.id);
+    final details = await Provider.of<StarWarsService>(context, listen: false)
+        .fetchCharacterDetails(widget.basicCharacterData.id);
 
     setState(() {
       _details = details;

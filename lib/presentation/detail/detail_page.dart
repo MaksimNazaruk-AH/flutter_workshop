@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workshop/data/models/basic_character_data.dart';
 import 'package:workshop/data/models/character_details.dart';
+import 'package:workshop/data/services/favourites_service.dart';
 import 'package:workshop/data/services/star_wars_service.dart';
 
 class DetailPage extends StatefulWidget {
@@ -40,6 +41,20 @@ class _DetailPageState extends State<DetailPage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text(widget.basicCharacterData.name),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Provider.of<FavouritesService>(context)
+                      .isFavourite(widget.basicCharacterData.id)
+                  ? Icons.star
+                  : Icons.star_border,
+            ),
+            onPressed: () {
+              Provider.of<FavouritesService>(context, listen: false)
+                  .toggleFavourite(widget.basicCharacterData.id);
+            },
+          ),
+        ],
       ),
       body: _details != null
           ? _DetailsBody(

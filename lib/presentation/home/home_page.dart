@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workshop/data/models/basic_character_data.dart';
+import 'package:workshop/data/services/favourites_service.dart';
 import 'package:workshop/data/services/star_wars_service.dart';
 import 'package:workshop/presentation/detail/detail_page.dart';
 import 'package:workshop/presentation/home/character_tile.dart';
@@ -51,6 +52,12 @@ class _HomePageState extends State<HomePage> {
                         DetailPage(basicCharacterData: _characters[index]),
                   ),
                 ),
+                isFavourite: Provider.of<FavouritesService>(context)
+                    .isFavourite(_characters[index].id),
+                onFavouriteTap: () {
+                  Provider.of<FavouritesService>(context, listen: false)
+                      .toggleFavourite(_characters[index].id);
+                },
               ),
             )
           : const Center(

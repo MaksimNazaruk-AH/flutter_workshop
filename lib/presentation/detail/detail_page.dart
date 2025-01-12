@@ -83,10 +83,10 @@ class _DetailsBody extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Image.asset('assets/img/$id.jpg'),
-        Text('Name: ${details.name}'),
-        Text('Height: ${details.height}'),
-        Text('Mass: ${details.mass}'),
-        Text('Birth year: ${details.birthYear}'),
+        Text('Name: ${details.properties.name}'),
+        Text('Height: ${details.properties.height}'),
+        Text('Mass: ${details.properties.mass}'),
+        Text('Birth year: ${details.properties.birthYear}'),
       ],
     );
   }

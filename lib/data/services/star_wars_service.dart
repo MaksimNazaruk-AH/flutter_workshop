@@ -37,7 +37,7 @@ class StarWarsService {
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
       if (json is Map<String, dynamic>) {
-        final properties = json['result']['properties'] as Map<String, dynamic>;
+        final properties = json['result'] as Map<String, dynamic>;
         return CharacterDetails.fromJson(properties);
       }
     }

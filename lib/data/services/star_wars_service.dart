@@ -31,7 +31,7 @@ class StarWarsService {
     }
   }
 
-  Future<CharacterDetails?> fetchCharacterDetails(String id) async {
+  Future<CharacterDetails> fetchCharacterDetails(String id) async {
     final response = await http.get(Uri.parse('${starWarsBaseUrl}people/$id'));
 
     if (response.statusCode == 200) {
@@ -42,6 +42,6 @@ class StarWarsService {
       }
     }
 
-    return null;
+    throw Exception('Failed to load character details');
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:workshop/data/models/basic_character_data.dart';
@@ -18,7 +20,7 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
-  CharacterDetails? _details;
+  Completer<CharacterDetails>? _detailsCompleter;
 
   @override
   void initState() {
@@ -26,13 +28,14 @@ class _DetailPageState extends State<DetailPage> {
     _fetchDetails();
   }
 
-  Future<void> _fetchDetails() async {
-    final details = await Provider.of<StarWarsService>(context, listen: false)
-        .fetchCharacterDetails(widget.basicCharacterData.id);
+  void _fetchDetails() {
+    final completer = Completer<CharacterDetails>();
+    Provider.of<StarWarsService>(context, listen: false)
+        .fetchCharacterDetails(widget.basicCharacterData.id)
+        .then(completer.complete)
+        .onError(completer.completeError);
 
-    setState(() {
-      _details = details;
-    });
+    _detailsCompleter = completer;
   }
 
   @override
@@ -56,14 +59,57 @@ class _DetailPageState extends State<DetailPage> {
           ),
         ],
       ),
-      body: _details != null
-          ? _DetailsBody(
-              id: widget.basicCharacterData.id,
-              details: _details!,
-            )
-          : const Center(
-              child: CircularProgressIndicator(),
-            ),
+      body: FutureBuilder(
+          future: _detailsCompleter?.future,
+          builder: (context, detailsSnapshot) {
+            switch (detailsSnapshot.connectionState) {
+              case ConnectionState.none:
+              case ConnectionState.waiting:
+                return const _LoadingBody();
+              case ConnectionState.done:
+                if (detailsSnapshot.hasError || !detailsSnapshot.hasData) {
+                  return const _ErrorBody();
+                } else {
+                  return _DetailsBody(
+                    id: widget.basicCharacterData.id,
+                    details: detailsSnapshot.data!,
+                  );
+                }
+              default:
+                return const SizedBox.shrink();
+            }
+          }),
+    );
+  }
+}
+
+class _LoadingBody extends StatelessWidget {
+  const _LoadingBody();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+}
+
+class _ErrorBody extends StatelessWidget {
+  const _ErrorBody();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error,
+            size: 64.0,
+          ),
+          Text('Something went wrong'),
+        ],
+      ),
     );
   }
 }
